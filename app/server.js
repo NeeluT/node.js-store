@@ -1,6 +1,9 @@
 const express = require("express")
 const mongoose = require("mongoose")
 const path = require("path")
+const createError = require("http-errors")
+const swaggerUI = require("swagger-ui-express")
+const swaggerJsDoc = require("swagger-jsdoc")
 const { AllRoutes } = require("./router/router")
 const morgan = require("morgan")
 
@@ -22,6 +25,21 @@ module.exports = class application {
         this.#app.use(express.json())
         this.#app.use(express.urlencoded({extended: true}))
         this.#app.use(express.static(path.join(__dirname, "..", "public")))
+        this.#app.use("/api-doc", swaggerUI.serve, swaggerUI.setup(swaggerJsDoc({
+            swaggerDefinition : {
+                info : {
+                    title : "Boto Start Store",
+                    version : "2.0.0",
+                    description : "The largest Training Store for programmers"
+                },
+                servers : [
+                    {
+                        url : "http://localhost:5000"
+                    }
+                ]
+            },
+            apis : ["./app/router/**/*.js"]
+        })))
     }
     createServer() {
         const http = require("http")
@@ -47,17 +65,17 @@ module.exports = class application {
     }
     errorHandling() {
         this.#app.use((req, res, next) => {
-            return res.status(404).json({
-                statusCode: 404,
-                message: "Route was not found"
-            })
+           next(createError.NotFound("Route not found"))
         })
         this.#app.use((error, req, res, next) => {
-            const statusCode = error.status || 500
-            const message = error.message || "InternalServerError"
-            return res.statusCode.json({
-                statusCode,
-                message
+            const serverError = createError.InternalServerError()
+            const statusCode = error.status || serverError.status
+            const message = error.message || serverError.message
+            return res.status(statusCode).json({
+                errors: {
+                    statusCode,
+                    message
+                }
             })
         })
     }
