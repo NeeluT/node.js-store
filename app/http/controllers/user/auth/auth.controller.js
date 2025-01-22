@@ -27,11 +27,12 @@ class UserAuthController extends Controller {
             await checkOtpSchema.validateAsync(req.body)
             const {mobile, code} = req.body
             const user = await UserModel.findOne({mobile})
-            if(!user) createError.NotFound("User not found")
-            if(user.otp.code != code) createError.Unauthorized("Incorrect code")
+            if(!user) throw createError.NotFound("User not found")
+            if(user.otp.code != code) throw createError.Unauthorized("Incorrect code")
             const now = Date.now()
-            if(+user.otp.expiresIn < now) createError.Unauthorized("Code has expired")
+            if(+user.otp.expiresIn < now) throw createError.Unauthorized("Code has expired")
             const accessToken = await signAccessToken(user._id)
+        console.log("accessToken");
             return res.json({
                 data : {
                     accessToken
