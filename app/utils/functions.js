@@ -1,25 +1,29 @@
-const creatError = require("http-errors")
+const createError = require("http-errors")
 const JWT = require("jsonwebtoken")
 const { UserModel } = require("../models/users")
+const {ACCESS_TOKEN_SECRET_KEY} = require("../utils/constants")
+
 
 function randomNumberGenerator() {
     return Math.floor((Math.random() * 90000) + 10000)
 }
 function signAccessToken(userId) {
     return new Promise(async (resolve, reject) => {
-        const user = await UserModel.findById(userId).then(res => res)
-        const payload = {
-            mobile : user.mobile,
-            userID : user._id
+        try {
+            const user = await UserModel.findById(userId)
+            const payload = {
+                mobile : user.mobile,
+            }
+            const options = {
+                expiresIn : "1h"
+            }
+            JWT.sign(payload, ACCESS_TOKEN_SECRET_KEY, options, (err, token) => {
+                if(err) reject(createError.InternalServerError("Server Error"))
+                resolve(token)
+            })
+        } catch {
+            reject(createError.InternalServerError("An error occurred while signing the token"));
         }
-        const secret = ""
-        const options = {
-            expiresIn : "1h"
-        }
-        JWT.sign(payload,SECRET_KEY,options, (err, token) => {
-            if(err) reject(creatError.InternalServerError("Server Error"))
-            resolve(token)
-        })
     })
 }
 
