@@ -7,6 +7,7 @@ const swaggerJsDoc = require("swagger-jsdoc")
 const cors = require("cors")
 const { AllRoutes } = require("./router/router")
 const morgan = require("morgan")
+const redisClient = require("./utils/init_redis");
 
 module.exports = class application {
     #app = express()
@@ -16,6 +17,7 @@ module.exports = class application {
         this.#PORT = PORT
         this.#DB_URI = DB_URI
         this.configApplication()
+        this.initRedis()
         this.connectToMongoDB()
         this.createServer()
         this.createRoutes()
@@ -61,6 +63,9 @@ module.exports = class application {
         mongoose.connection.on("disconnected", () => {
             console.log("mongoose connection failed");
         })
+    }
+    initRedis() {
+          console.log("Redis client imported and ready.");
     }
     createRoutes() {
         this.#app.use(AllRoutes)
