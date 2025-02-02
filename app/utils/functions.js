@@ -2,6 +2,7 @@ const createError = require("http-errors")
 const JWT = require("jsonwebtoken")
 const { UserModel } = require("../models/users")
 const {ACCESS_TOKEN_SECRET_KEY, REFRESH_TOKEN_SECRET_KEY} = require("../utils/constants")
+const redisClient = require("../utils/init_redis")
 
 
 function randomNumberGenerator() {
@@ -36,8 +37,9 @@ function signRefreshToken(userId) {
             const options = {
                 expiresIn : "1y"
             }
-            JWT.sign(payload, REFRESH_TOKEN_SECRET_KEY, options, (err, token) => {
+            JWT.sign(payload, REFRESH_TOKEN_SECRET_KEY, options, async(err, token) => {
                 if(err) reject(createError.InternalServerError("Server Error"))
+                await redisClient.SETEX(userId.toString(), 365 * 24 * 60 * 60, token);
                 resolve(token)
             })
         } catch {

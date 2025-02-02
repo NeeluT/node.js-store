@@ -1,5 +1,5 @@
 # Use Node.js image
-FROM node:18
+FROM node:latest
 
 # Set working directory inside the container
 WORKDIR /usr/src/app
@@ -9,6 +9,9 @@ COPY package*.json ./
 
 # Install application dependencies
 RUN npm install
+
+# Install nodemon globally for development purposes
+RUN npm install -g nodemon
 
 # Copy the rest of the application code
 COPY . .

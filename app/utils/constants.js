@@ -1,6 +1,12 @@
 module.exports = {
-    EXPIRES_IN : new Date().getTime() + 120000,
-    USER_ROLE : "USER",
+    MongoIDPattern : /^(?=[a-f\d]{24}$)(\d+[a-f]|[a-f]+\d)/i,
+    ROLES : {
+        USER : "USER",
+        ADMIN : "ADMIN",
+        WRITER : "WRITER",
+        TEACHER : "TEACHER",
+        SUPPLIER : "SUPPLIER",
+    },
     ACCESS_TOKEN_SECRET_KEY : "413c48497ec87c4c9653b8c2512b4cb3a25e1a3512c522fa309d8536cf076286",
     REFRESH_TOKEN_SECRET_KEY : "9099FCA026C9FE64C7EEFAF1D7ECD0A77242ED3DEDEBB57C11EEAD64D12275DD"
 }

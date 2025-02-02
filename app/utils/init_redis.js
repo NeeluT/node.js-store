@@ -3,7 +3,7 @@ const redisDB = require("redis");
 // Create the Redis client
 const redisClient = redisDB.createClient({
     socket: {
-        host: "127.0.0.2", // Redis host
+        host: "127.0.0.1", // Redis host
         port: 6379,        // Redis port
     },
 });
